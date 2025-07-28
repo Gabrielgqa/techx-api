@@ -28,3 +28,20 @@ export async function getTasks(req: Request, res: Response) {
     return res.status(500).json({ error: 'Failed to fetch tasks' });
   }
 }
+
+export async function updateTask(req: Request, res: Response) {
+  const { id } = req.params;
+  const { title, description } = req.body;
+  const user = req.user as any;
+
+  try {
+    const task = await knex('tasks').where({ id, author: user.id }).first();
+    if (!task) return res.status(404).json({ error: 'Task not found' });
+
+    await knex('tasks').where({ id }).update({ title, description });
+
+    return res.json({ message: 'Task updated' });
+  } catch {
+    return res.status(500).json({ error: 'Failed to update task' });
+  }
+}
