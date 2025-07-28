@@ -17,3 +17,14 @@ export async function createTask(req: Request, res: Response) {
     return res.status(500).json({ error: 'Failed to create task' });
   }
 }
+
+export async function getTasks(req: Request, res: Response) {
+  const user = req.user as any;
+
+  try {
+    const tasks = await knex('tasks').where({ author: user.id });
+    return res.json(tasks);
+  } catch {
+    return res.status(500).json({ error: 'Failed to fetch tasks' });
+  }
+}
